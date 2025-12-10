@@ -38,7 +38,6 @@
         }
     ],
     "cpu": "1024",
-    "enableFaultInjection": false,
     "executionRoleArn": "arn:aws:iam::758225243696:role/ecs-task-defination",
     "family": "nodejs-app-task-definition",
     "memory": "3072",
