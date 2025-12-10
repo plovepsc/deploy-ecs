@@ -5,8 +5,9 @@ on:
     branches: [master]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -33,18 +34,13 @@ jobs:
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Render ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: nodejs-app
-          image: ${{ steps.build-image.outputs.image }}
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    environment: production
+    runs-on: ubuntu-latest
 
-      - name: Deploy ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: my-ecs-service
-          cluster: my-ecs-cluster
-          wait-for-service-stability: true
+    steps:
+      - name: Test deploy step
+        run: |
+          echo "this deploy destination server"
